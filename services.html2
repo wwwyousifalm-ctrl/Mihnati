@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الخدمات والوظائف - مهنتي</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="services.html" class="active">الوظائف والخدمات</a>
+        <a href="about.html">عن التطبيق</a>
+        <a href="contact.html">تواصل معنا</a>
+    </nav>
+
+    <div class="content-container">
+        <h2>الوظائف المتاحة</h2>
+        <p class="sub-text">اكتشف الوظيفة التي تناسب طموحك</p>
+
+        <!-- أدوات البحث والفلترة -->
+        <div class="search-filter-box">
+            <input type="text" id="searchInput" placeholder="ابحث عن وظيفة، شركة، أو مدينة...">
+            
+            <select id="typeFilter">
+                <option value="all">كل أنواع الدوام</option>
+                <option value="دوام كامل">دوام كامل</option>
+                <option value="دوام جزئي">دوام جزئي</option>
+                <option value="عمل حر">عمل حر</option>
+            </select>
+        </div>
+
+        <!-- حاوية الوظائف -->
+        <div id="jobsContainer" class="jobs-grid"></div>
+    </div>
+
+    <!-- كود الجافا سكريبت المطور -->
+    <script>
+        // 1. قاعدة البيانات الوهمية
+        const jobsData = [
+            { id: 1, title: "مطور واجهات أمامية", company: "شركة التقنية الحديثة", location: "الرياض", type: "دوام كامل" },
+            { id: 2, title: "مصمم جرافيك", company: "استوديو الإبداع", location: "جدة", type: "دوام جزئي" },
+            { id: 3, title: "محاسب مالي", company: "مجموعة الأعمال", location: "الخرطوم", type: "دوام كامل" },
+            { id: 4, title: "مسؤول تسويق إلكتروني", company: "منصة نمو", location: "عن بُعد", type: "عمل حر" },
+            { id: 5, title: "مهندس شبكات", company: "حلول الاتصالات", location: "الرياض", type: "دوام كامل" },
+            { id: 6, title: "مترجم لغة إنجليزية", company: "مكتب الترجمة", location: "عن بُعد", type: "عمل حر" }
+        ];
+
+        // 2. جلب العناصر
+        const jobsContainer = document.getElementById('jobsContainer');
+        const searchInput = document.getElementById('searchInput');
+        const typeFilter = document.getElementById('typeFilter');
+
+        // 3. نظام المفضلة (LocalStorage)
+        // نقرأ المفضلة من المتصفح، إذا لم توجد نضع مصفوفة فارغة
+        let savedJobs = JSON.parse(localStorage.getItem('mySavedJobs')) || [];
+
+        // 4. دالة العرض
+        function displayJobs(jobs) {
+            jobsContainer.innerHTML = ''; 
+
+            if (jobs.length === 0) {
+                jobsContainer.innerHTML = '<p class="no-results">لا توجد وظائف تطابق بحثك.</p>';
+                return;
+            }
+
+            jobs.forEach(job => {
+                // هل هذه الوظيفة محفوظة في المفضلة؟
+                const isSaved = savedJobs.includes(job.id);
+                const heartIcon = isSaved ? '❤️' : '🤍'; // قلب ملون إذا كانت محفوظة
+
+                const jobCard = `
+                    <div class="job-card">
+                        <div class="card-header">
+                            <h3>${job.title}</h3>
+                            <button class="save-btn" onclick="toggleSave(${job.id})">${heartIcon}</button>
+                        </div>
+                        <p class="company-name">🏢 ${job.company}</p>
+                        <p class="location">📍 ${job.location}</p>
+                        <span class="job-type">${job.type}</span>
+                        <button class="btn-primary btn-apply" onclick="applyForJob('${job.title}')">قدم الآن</button>
+                    </div>
+                `;
+                jobsContainer.innerHTML += jobCard;
+            });
+        }
+
+        // 5. دالة الفلترة (البحث + نوع الدوام معاً)
+        function filterJobs() {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedType = typeFilter.value;
+
+            const filtered = jobsData.filter(job => {
+                // شرط البحث بالاسم أو الشركة أو المدينة
+                const matchesSearch = job.title.toLowerCase().includes(searchText) || 
+                                      job.company.toLowerCase().includes(searchText) ||
+                                      job.location.toLowerCase().includes(searchText);
+                
+                // شرط الفلترة حسب النوع
+                const matchesType = (selectedType === 'all') || (job.type === selectedType);
+
+                // يجب أن يتحقق الشرطان معاً
+                return matchesSearch && matchesType;
+            });
+
+            displayJobs(filtered);
+        }
+
+        // 6. دالة حفظ/إزالة الوظيفة من المفضلة
+        function toggleSave(jobId) {
+            if (savedJobs.includes(jobId)) {
+                // إذا كانت محفوظة، احذفها
+                savedJobs = savedJobs.filter(id => id !== jobId);
+            } else {
+                // إذا لم تكن محفوظة، أضفها
+                savedJobs.push(jobId);
+            }
+            
+            // حفظ المصفوفة الجديدة في المتصفح
+            localStorage.setItem('mySavedJobs', JSON.stringify(savedJobs));
+            
+            // إعادة عرض الوظائف لتحديث شكل القلب
+            filterJobs();
+        }
+
+        // 7. دالة التقديم
+        function applyForJob(jobTitle) {
+            alert(`تم إرسال طلبك بنجاح لوظيفة: ${jobTitle}`);
+        }
+
+        // 8. ربط الأحداث (Event Listeners)
+        searchInput.addEventListener('input', filterJobs); // عند الكتابة
+        typeFilter.addEventListener('change', filterJobs); // عند تغيير القائمة المنسدلة
+
+        // تشغيل العرض لأول مرة
+        filterJobs();
+
+    </script>
+
+</body>
+</html>
