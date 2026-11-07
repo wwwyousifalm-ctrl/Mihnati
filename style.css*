@@ -1,0 +1,57 @@
+/* ===== تنسيقات الفلترة والمفضلة ===== */
+
+/* حاوية البحث والفلترة معاً */
+.search-filter-box {
+    display: flex;
+    gap: 10px;
+    margin: 20px auto 40px;
+    max-width: 700px;
+    flex-wrap: wrap; /* عشان لو الشاشة صغيرة ينزلوا تحت بعض */
+}
+
+.search-filter-box input {
+    flex: 2; /* يأخذ مساحة أكبر */
+    padding: 12px 20px;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-family: 'Cairo', sans-serif;
+    outline: none;
+}
+
+.search-filter-box select {
+    flex: 1; /* يأخذ مساحة أقل */
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-family: 'Cairo', sans-serif;
+    outline: none;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.search-filter-box input:focus, .search-filter-box select:focus {
+    border-color: #007bff;
+}
+
+/* تنسيق رأس كرت الوظيفة ليحتوي على العنوان وزر القلب */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+/* زر القلب */
+.save-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.save-btn:hover {
+    transform: scale(1.2); /* يكبر قليلاً عند المرور عليه */
+}
